@@ -6,8 +6,14 @@ from  functools import reduce
 # Generate universe variables
 #   * inputs : error teta y error
 #   obtener omega
+
+def factor(valor, min, max):
+    assert min < max
+    return min+(max-min)*valor
+
+
 def fis_opt(e_teta, error, params=[], grafica=False):
-    #a, b, c, d, e, f, g, h = list(map(abs,params))
+    a, b, c, d, e, f, g, h,i , j = list(map(abs,params))
     #print(params,e_teta, error)
     #factor_apertura = 1.3
 
@@ -15,27 +21,38 @@ def fis_opt(e_teta, error, params=[], grafica=False):
     x_error  = np.arange(-100, 100, 0.5)
     x_omega  = np.arange(-100, 100, 0.5)
 
-    # x_e_teta = np.arange(-5, 5, 0.5)
-    # x_error = np.arange(-5, 5, 0.5)
-    # x_omega = np.arange(-5, 5, 0.5)
+    #x_e_teta = np.arange(-3, 3, 0.05)
+    #x_error = np.arange(-3, 3, 0.05)
+    #x_omega = np.arange(-3, 3, 0.05)
 
     # estas son las 5 funciones de membresia con parametros fijos
 
     # ver en variables modificada
+    a = factor(a, 0,1) #(0,1)
+    b = factor(b, 0.5, 2)    # (-2,-0.5)
+    c = factor(c, 0, 2) # (0, 2)
+    d = factor(d, 0.5, 1.5) # (.5 , 1.5)
+    e = factor(e, 0, 1) # (0, 1)
 
+    f =factor(f, 0, 1)  # (0,1)
+    g = factor(g, 0.5, 2)  # (-2,0.5)
+    h = factor(h, 0, 2) # (0, 2)
+    i = factor(i, 0.5, 1.5) # (.5 , 1.5)
+    j = factor(j, 0, 1)  # (0, 1)
 
+    #print(a, b, c, d, e, f, g, h,i , j)
     # Generate fuzzy membership functions trapezoidal y triangular
-    e_teta_hi_neg = fuzz.trapmf(x_e_teta, [-50, -5,-1, -0.5])
-    e_teta_med_neg = fuzz.trimf(x_e_teta, [-1,-0.5, 0])
-    e_teta_lo      = fuzz.trimf(x_e_teta, [-0.25, 0, 0.25])
-    e_teta_med_pos = fuzz.trimf(x_e_teta, [0, 0.5, 1])
-    e_teta_hi_pos = fuzz.trapmf(x_e_teta, [0.5, 1, 5, 50])
+    e_teta_hi_neg = fuzz.trapmf(x_e_teta, [-50, -5,-b, -b+c])
+    e_teta_med_neg = fuzz.trimf(x_e_teta, [-d-e, -d, -d+e])
+    e_teta_lo      = fuzz.trimf(x_e_teta, [-a, 0, a])
+    e_teta_med_pos = fuzz.trimf(x_e_teta, [d-e, d, d+e])
+    e_teta_hi_pos = fuzz.trapmf(x_e_teta, [b-c, b, 5, 50])
 
-    error_hi_neg  = fuzz.trapmf(x_error, [-50, -5,-1, -0.5])
-    error_med_neg = fuzz.trimf(x_e_teta, [-1,-0.5, 0])
-    error_lo      = fuzz.trimf(x_error,  [-0.25, 0, 0.25])
-    error_med_pos = fuzz.trimf(x_e_teta, [0, 0.5, 1])
-    error_hi_pos  = fuzz.trapmf(x_error, [0.5, 1, 5, 50])
+    error_hi_neg  = fuzz.trapmf(x_error, [-50, -5,-g, -g+h])
+    error_med_neg = fuzz.trimf(x_e_teta, [-i-j, -i, -i+j])
+    error_lo      = fuzz.trimf(x_error,  [-f, 0, f])
+    error_med_pos = fuzz.trimf(x_e_teta, [i-j, i, i+j])
+    error_hi_pos  = fuzz.trapmf(x_error, [g-h, g, 5, 50])
 
     omega_hi_neg  = fuzz.trapmf(x_omega,  [-50,-5,-1,-0.5])
     omega_med_neg = fuzz.trimf(x_omega,   [-1, -0.5, -0])
@@ -177,32 +194,7 @@ def fis_opt(e_teta, error, params=[], grafica=False):
     omega = fuzz.defuzz(x_omega, aggregated, 'centroid')
     #tip_activation = fuzz.interp_membership(x_omega, aggregated, omega)  # for plot
 
- # Visualize this
- #    if grafica:
- #        fig, ax0 = plt.subplots(figsize=(8, 3))
- #
- #        ax0.fill_between(x_omega,  tip_activation_1, facecolor='b', alpha=0.7)
- #        ax0.plot(x_omega, omega_hi_neg, 'b', linewidth=0.5, linestyle='--', )
- #        ax0.fill_between(x_omega, tip_activation_2, facecolor='g', alpha=0.7)
- #        ax0.plot(x_omega, omega_lo, 'g', linewidth=0.5, linestyle='--')
- #        ax0.fill_between(x_omega,  tip_activation_3, facecolor='r', alpha=0.7)
- #        ax0.plot(x_omega, omega_hi_pos, 'r', linewidth=0.5, linestyle='--')
- #        ax0.set_title('Output membership activity')
- #
- #
- #    # Visualize this
- #    if grafica:
- #        fig, ax0 = plt.subplots(figsize=(8, 3))
- #
- #        ax0.plot(x_omega, omega_hi_neg, 'b', linewidth=0.5, linestyle='--', )
- #        ax0.plot(x_omega, omega_lo, 'g', linewidth=0.5, linestyle='--')
- #        ax0.plot(x_omega, omega_hi_pos, 'r', linewidth=0.5, linestyle='--')
- #        ax0.fill_between(x_omega,  aggregated, facecolor='Orange', alpha=0.7)
- #        ax0.plot([omega, omega], [0, tip_activation], 'k', linewidth=1.5, alpha=0.9)
- #        ax0.set_title('Aggregated membership and result (line)')
 
-        # plt.tight_layout()
-        # plt.show()
     return omega
 
 if __name__ == '__main__':
@@ -215,5 +207,9 @@ if __name__ == '__main__':
     #omega= fis_opt(1.0572916680894755 ,-0.92007166,[0.19590043465383156, 0.7167493393335032, 0.9350616308752682, 0.2737485279962393, 0.9197640201658847, 0.9344545773709528, 0.2746576593220633, 0.662691565472217],True)
     #omega = fis_opt( -0.8579203417523265, -2.02587306, [0.6158061060468809, 0.4832258519402056, 0.7864552296026883, 0.5862045721640615, 0.6798355710879616, 0.386040327866486, 0.6634239215587792, 0.38294084619747026], True)
     #print(omega) ## debe imprimir -1.5385706528567843e-17
-    omega = fis_opt(-1.053091629254558,4.5266952810876880,[0.7129072353481256, 0.6950511269226142, 0.4050757896004107, 0.5196998000235793, 0.59708268324291787, 0.48749702495492913, 0.3155646574417933, 0.4239541979859553] ,True)
+    omega = fis_opt(-1.053091629254558,4.5266952810876880,
+                    [0.8959158028155084, 0.658995053052556, 0.676739138745285, 0.559788140918265, 1.0342303561818451,
+                     -0.06451794622238155, 0.4669683430430709, 0.6595549547377009, 0.5788390726539321,
+                     1.1403916447411557]
+                    ,True)
 

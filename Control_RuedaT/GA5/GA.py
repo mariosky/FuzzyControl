@@ -1,5 +1,5 @@
 import random
-from rueda_trasera_fisopt import prueba_simulador
+from Control_RuedaT.GA5.rueda_trasera_fisopt import prueba_simulador
 import time
 import json  # formato de texto universal
 
@@ -16,7 +16,7 @@ toolbox = base.Toolbox()
 toolbox.register("attr_float", random.uniform, 0,1)
 
 # Structure initializers
-toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_float, 8)
+toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_float, 10)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("evaluate", prueba_simulador)
 toolbox.register("mate", tools.cxOnePoint)
@@ -72,6 +72,7 @@ def main(config):
 
     for gen in range(config['ngen']):
         # decendencia
+        print("gen:",gen)
 
         offspring = toolbox.select(config['pop'], len(config['pop']))
         offspring = list(map(toolbox.clone, offspring))
